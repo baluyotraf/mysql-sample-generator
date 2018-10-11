@@ -36,7 +36,9 @@ class Table:
 
     # noinspection PyMethodMayBeStatic
     def _process_value(self, value):
-        if isinstance(value, str):
+        if value is None:
+            return 'null'
+        elif isinstance(value, str):
             return "'" + value + "'"
         else:
             return str(value)
@@ -46,7 +48,8 @@ class Table:
         values = ', '.join(values)
         return _INDENT + '(' + values + ')'
 
-    def insert(self, col_names, values):
+    def insert(self, columns, values):
+        col_names = [c.name if isinstance(c, Column) else c for c in columns]
         col_names = ', '.join([_process_name(cn) for cn in col_names])
         values = ',\n'.join([self._process_values(vs) for vs in values])
         return self.__insert__.format(name=_process_name(self.name),
@@ -73,6 +76,22 @@ class Column:
         return ' '.join(details_list)
 
 
+class ForeignKey:
+
+    __sql__ = 'FOREIGN KEY ({col_name})\n' + \
+              _INDENT * 2 + 'REFERENCES {ptable}({pcol_name})'
+
+    def __init__(self, col_name, ptable, pcol_name):
+        self.col_name = col_name
+        self.ptable = ptable
+        self.pcol_name = pcol_name
+
+    def __str__(self):
+        return self.__sql__.format(col_name=_process_name(self.col_name),
+                                   ptable=_process_name(self.ptable),
+                                   pcol_name=_process_name(self.pcol_name))
+
+
 if __name__ == '__main__':
     db = Database('db')
     print(db.create())
@@ -86,4 +105,5 @@ if __name__ == '__main__':
     col_names = ['id', 'name']
     values = [[1, 'raf'], [2, 'Arietta']]
     print(tbl.insert(col_names, values))
+    print(ForeignKey('author_id', 'tbl', 'id'))
 
