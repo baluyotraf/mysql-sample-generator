@@ -60,4 +60,5 @@ if __name__ == '__main__':
         write_line(file, db.use())
         write_line(file, table.create())
         write_line(file, table.insert(INSERT_COLUMN, values_generator(DATA_COUNT)))
+    input()
 

@@ -84,4 +84,4 @@ if __name__ == '__main__':
         write_line(file, ctable.create())
         write_line(file, ptable.insert(*row_generator(DATA_COUNT, ptable.col_mods)))
         write_line(file, ctable.insert(*row_generator(DATA_COUNT*CHILD_MULTIPLIER, ctable.col_mods)))
-
+    input()
